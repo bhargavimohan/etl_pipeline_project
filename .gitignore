@@ -1,0 +1,9 @@
+kaggle.json
+.vscode/.env
+.vscode/launch.json
+.vscode/settings.json
+data/raw/Impact_of_Remote_Work_on_Mental_Health.csv
+.gitignore
+logs/etl.log
+.gitignore
+data/raw/remote-work-and-mental-health.zip

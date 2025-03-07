@@ -1,0 +1,8 @@
+pandas
+requests
+sqlalchemy
+PyYAML
+psycopg2-binary
+kaggle
+python-dotenv
+snowflake-connector-python

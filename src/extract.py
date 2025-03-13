@@ -1,21 +1,15 @@
-import os
-import zipfile
-from dotenv import load_dotenv
-load_dotenv()
 from kaggle.api.kaggle_api_extended import KaggleApi
+import zipfile
 
-def extract_data():
+
+def extract_data(api_path, zipped_path):
     # Initialize Kaggle API client
     api = KaggleApi()
     api.authenticate()
 
     try:
-        dataset = "waqi786/remote-work-and-mental-health"
-        data_path = "data/raw/remote-work-and-mental-health.zip"
-        api.dataset_download_files(dataset, path="data/raw", unzip=False)
-
-
-        with zipfile.ZipFile(data_path, 'r') as zip_ref:
+        api.dataset_download_files(api_path, path="data/raw", unzip=False)
+        with zipfile.ZipFile(zipped_path, "r") as zip_ref:
             zip_ref.extractall("data/raw")
     except Exception as e:
         print("Error while extracting data" + e)

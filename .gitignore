@@ -7,3 +7,5 @@ data/raw/Impact_of_Remote_Work_on_Mental_Health.csv
 logs/etl.log
 .gitignore
 data/raw/remote-work-and-mental-health.zip
+.env
+data/processed/Impact_of_Remote_Work_on_Mental_Health_processed.csv

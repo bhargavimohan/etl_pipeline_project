@@ -76,7 +76,7 @@ def check_nan(df, processed_data_path):
 def generate_insights(df, processed_data_path):
     try:
         RETIREMENT_AGE = 65
-        df["Years_Left"] = RETIREMENT_AGE - df["Age"]
+        df["Work_Years_Left"] = RETIREMENT_AGE - df["Age"]
 
         physical_activity_map = {"Sedentary": 1, "Weekly": 2, "Daily": 3}
         sleep_quality_map = {"Poor": 1, "Average": 2, "Good": 3}
@@ -108,29 +108,24 @@ def generate_insights(df, processed_data_path):
             )
             / 4
         ) * (
-            df["Years_Left"] / 65
+            df["Work_Years_Left"] / 65
         )  # Compute Happiness/Stress Index Projection
-        df["Future_Happiness_Index"] = df["Future_Happiness_Index"].round(2)
-        df["Future_Stress_Level"] = 1 - df["Future_Happiness_Index"]
+
         scaler = MinMaxScaler(
             feature_range=(0, 1)
         )  # Initialize MinMaxScaler to scale between 0 and 1
 
-        df[["Future_Happiness_Index", "Future_Stress_Level"]] = scaler.fit_transform(
-            df[["Future_Happiness_Index", "Future_Stress_Level"]]
+        df[["Future_Happiness_Index"]] = scaler.fit_transform(
+            df[["Future_Happiness_Index"]]
         )  # Apply MinMaxScaler to scale the 'Future_Happiness_Index' and 'Future_Stress_Level' columns
 
-        df[["Future_Happiness_Index", "Future_Stress_Level"]] = df[
-            ["Future_Happiness_Index", "Future_Stress_Level"]
-        ].clip(
-            0, 1
-        )  # Clip values to the range 0 to 1
+        # Ensure stress is the complement of happiness (not independently scaled)
+        df["Future_Stress_Level"] = 1 - df["Future_Happiness_Index"]
 
+        # Round both columns to 2 decimal places
         df[["Future_Happiness_Index", "Future_Stress_Level"]] = df[
             ["Future_Happiness_Index", "Future_Stress_Level"]
-        ].round(
-            2
-        )  # Round the final values to 2 decimal points
+        ].round(2)
 
         df.to_csv(processed_data_path, index=False)
         print(
@@ -161,9 +156,9 @@ def generate_insights_using_ML_model(df, processed_data_path):
     # df["Mental_Health_Condition_Score"] = df["Mental_Health_Condition"].map(mental_health_condition_map)
 
     # # Compute remaining working years
-    # df["Years_Left"] = 65 - df["Age"]
+    # df["Work_Years_Left"] = 65 - df["Age"]
     # # Select features (X) and target variable (y)
-    # X = df[["Years_Left", "Physical_Activity_Score", "Sleep_Quality_Score",
+    # X = df[["Work_Years_Left", "Physical_Activity_Score", "Sleep_Quality_Score",
     #         "Mental_Health_Access_Score", "Mental_Health_Condition_Score"]]
     # y = df["Future_Stress_Level"]
 
@@ -184,7 +179,7 @@ def generate_insights_using_ML_model(df, processed_data_path):
     # print(f"Mean Absolute Error: {mae}")
     # print(f"R² Score: {r2}")
     # new_person = pd.DataFrame({
-    #     "Years_Left": [25],
+    #     "Work_Years_Left": [25],
     #     "Physical_Activity_Score": [3],  # High activity
     #     "Sleep_Quality_Score": [2],      # Average sleep
     #     "Mental_Health_Access_Score": [3],  # Full access

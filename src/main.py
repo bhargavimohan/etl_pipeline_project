@@ -25,6 +25,14 @@ columns_to_drop = os.getenv("COLUMNS_TO_DROP", "")
 filter_values_str = os.getenv("FILTER_VALUES", "{}")
 rows_to_drop = json.loads(filter_values_str)
 
+snowflake_user = os.getenv("SNOWFLAKE_USER")
+snowflake_password = os.getenv("SNOWFLAKE_PASSWORD")
+snowflake_account = os.getenv("SNOWFLAKE_ACCOUNT")
+snowflake_warehouse = os.getenv("SNOWFLAKE_WAREHOUSE")
+snowflake_database = os.getenv("SNOWFLAKE_DATABASE")
+snowflake_schema = os.getenv("SNOWFLAKE_SCHEMA")
+snowflake_role = os.getenv("SNOWFLAKE_ROLE")
+
 
 def main():
     logging.info("ETL Pipeline Started")
@@ -35,7 +43,7 @@ def main():
         logging.info("Data extraction completed successfully")
 
         logging.info("Data Transformation in progress...")
-        transformed_data = transform_data(
+        transform_data(
             raw_data_path=local_raw_data_path,
             processed_data_path=processed_data_path,
             columns_to_drop=columns_to_drop,
@@ -44,7 +52,17 @@ def main():
         logging.info("Data transformation completed successfully")
 
         logging.info("Loading data...")
-        load_data(transformed_data)
+        kwargs = {
+            "PROCESSED_DATA_PATH": processed_data_path,
+            "snowflake_user": snowflake_user,
+            "snowflake_password": snowflake_password,
+            "snowflake_account": snowflake_account,
+            "snowflake_warehouse": snowflake_warehouse,
+            "snowflake_database": snowflake_database,
+            "snowflake_schema": snowflake_schema,
+            "snowflake_role": snowflake_role,
+        }
+        load_data(**kwargs)
         logging.info("Data loading completed successfully")
 
         logging.info("Basic ETL Pipeline Completed Successfully")
